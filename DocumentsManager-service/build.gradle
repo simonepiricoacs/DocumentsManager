@@ -95,3 +95,14 @@ publishing {
         }
     }
 }
+
+waterDescriptor {
+    moduleId    = 'it.water.documents'
+    displayName = 'Documents Manager'
+    description = 'Document and folder management with metadata persistence and pluggable content storage backends'
+
+    input {
+        standardPin 'jdbc'
+        standardPin 'service-discovery'
+    }
+}

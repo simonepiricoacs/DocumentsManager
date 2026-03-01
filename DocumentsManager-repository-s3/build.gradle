@@ -41,3 +41,60 @@ publishing {
         	}
     }
  }
+
+waterDescriptor {
+    moduleId    = 'it.water.documents.repository.s3'
+    displayName = 'Documents Repository S3'
+    description = 'AWS S3 (and S3-compatible) content storage backend for Documents Manager'
+
+    properties {
+        property('it.water.storage.endpoint') {
+            type         = 'url'
+            envVar       = 'WATER_S3_ENDPOINT'
+            required     = true
+            sensitive    = false
+            defaultValue = 'http://localhost:9000'
+            description  = 'S3-compatible endpoint URL (empty for AWS default; http://localhost:9000 for MinIO)'
+        }
+        property('it.water.storage.access-key') {
+            type         = 'string'
+            envVar       = 'WATER_S3_ACCESS_KEY'
+            required     = true
+            sensitive    = false
+            defaultValue = ''
+            description  = 'S3 access key ID'
+        }
+        property('it.water.storage.secret-key') {
+            type         = 'password'
+            envVar       = 'WATER_S3_SECRET_KEY'
+            required     = true
+            sensitive    = true
+            defaultValue = ''
+            description  = 'S3 secret access key'
+        }
+        property('it.water.storage.region') {
+            type         = 'string'
+            envVar       = 'WATER_S3_REGION'
+            required     = true
+            sensitive    = false
+            defaultValue = 'us-east-1'
+            description  = 'AWS region (e.g., us-east-1)'
+        }
+        property('it.water.storage.bucket') {
+            type         = 'string'
+            envVar       = 'WATER_S3_BUCKET'
+            required     = true
+            sensitive    = false
+            defaultValue = 'bucket'
+            description  = 'S3 bucket name for document storage'
+        }
+        property('it.water.storage.path-style-enabled') {
+            type         = 'boolean'
+            envVar       = 'WATER_S3_PATH_STYLE_ENABLED'
+            required     = false
+            sensitive    = false
+            defaultValue = 'false'
+            description  = 'Enable path-style access (required for MinIO and S3-compatible endpoints)'
+        }
+    }
+}

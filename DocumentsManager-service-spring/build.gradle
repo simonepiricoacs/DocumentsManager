@@ -66,4 +66,10 @@ publishing {
         	}
     }
  }
- 
+
+waterDescriptor {
+    moduleId    = 'it.water.documents.spring'
+    displayName = 'Documents Manager Spring'
+    description = 'Spring Boot runtime variant of Documents Manager'
+    inheritsFrom project(':DocumentsManager-service')
+}
