@@ -11,6 +11,8 @@ import it.water.documents.manager.model.Document;
 import it.water.repository.service.BaseEntitySystemServiceImpl;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 
 
 /**
@@ -18,6 +20,7 @@ import lombok.Setter;
  * System Service Api Class for DocumentsManager entity.
  */
 @FrameworkComponent
+@Slf4j
 public class DocumentSystemServiceImpl extends BaseEntitySystemServiceImpl<Document> implements DocumentSystemApi {
     @Inject
     @Getter

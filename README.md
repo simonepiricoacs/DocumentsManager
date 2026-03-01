@@ -4,31 +4,6 @@
 
 The DocumentsManager module provides a robust, secure, and extensible document and folder management system for the Water Framework. It supports CRUD operations, content storage and retrieval, hierarchical folder structures, and integrates with external document repositories. The module exposes a REST API for file upload/download and folder management, with fine-grained permission control and multi-tenant support.
 
-## Architecture Overview
-
-```mermaid
-graph TD
-    A[DocumentsManager Module] --> B[DocumentsManager-api]
-    A --> C[DocumentsManager-model]
-    A --> D[DocumentsManager-service]
-    A --> E[DocumentsManager-service-spring]
-
-    B -->|defines| F[DocumentApi / FolderApi / RestApi]
-    C -->|entities| G[Document + Folder]
-    D -->|implementation| H[Services + Repository + REST Controller]
-    D -->|storage| I[DocumentRepositoryIntegrationClient]
-    E -->|Spring variant| J[Spring REST controllers]
-```
-
-## Sub-modules
-
-| Sub-module | Description |
-|---|---|
-| **DocumentsManager-api** | Defines `DocumentApi`, `DocumentSystemApi`, `FolderApi`, `FolderSystemApi`, REST APIs, and `DocumentRepositoryIntegrationClient` |
-| **DocumentsManager-model** | Contains `Document` and `Folder` JPA entities with hierarchical relationships |
-| **DocumentsManager-service** | Service implementations, repositories, and REST controllers |
-| **DocumentsManager-service-spring** | Spring-specific REST controllers and configuration |
-
 ## Module technical characteristics
 
 - **Java, JPA, and OSGi/Spring**: Core implementation in Java, using JPA for persistence, and supporting both OSGi and Spring environments.

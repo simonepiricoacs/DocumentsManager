@@ -6,6 +6,7 @@ import it.water.documents.manager.api.integration.DocumentRepositoryIntegrationC
 import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Client;
 import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Option;
 
+import it.water.core.model.exceptions.WaterRuntimeException;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,10 +32,11 @@ public class DocumentRepositoryIntegrationS3ClientImpl implements DocumentReposi
     @Override
     public void addNewFile(String path, InputStream sourceFile) {
         try {
+
             byte[] content = sourceFile.readAllBytes();
             documentRepositoryS3Client.upload(getBucket(), path, content);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WaterRuntimeException("Failed to upload file: " + path, e);
         }
 
     }
@@ -45,7 +47,7 @@ public class DocumentRepositoryIntegrationS3ClientImpl implements DocumentReposi
             byte[] content = sourceFile.readAllBytes();
             documentRepositoryS3Client.upload(getBucket(), path, content);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WaterRuntimeException("Failed to update file: " + path, e);
         }
     }
 
@@ -104,6 +106,8 @@ public class DocumentRepositoryIntegrationS3ClientImpl implements DocumentReposi
     public void moveFolder(String oldPath, String newPath) {
         log.debug("just for test Moving folder from {} to {}", oldPath, newPath);
     }
+
+
 
 
 }

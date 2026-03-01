@@ -1,5 +1,6 @@
 package it.water.documents.manager.repository.s3;
 
+import it.water.core.model.exceptions.WaterRuntimeException;
 import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Option;
 import it.water.documents.manager.repository.s3.service.DocumentRepositoryS3ClientImpl;
 import org.junit.jupiter.api.*;
@@ -8,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -198,6 +200,7 @@ class DocumentRepositoryS3ClientTest {
 
     /**
      * Test upload throws exception on S3 error.
+     * executeS3Operation wraps all S3 exceptions in WaterRuntimeException.
      */
     @Test
     @Order(8)
@@ -205,12 +208,14 @@ class DocumentRepositoryS3ClientTest {
         when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
                 .thenThrow(S3Exception.builder().message("S3 error").build());
 
-        Assertions.assertThrows(S3Exception.class, () ->
+        WaterRuntimeException ex = Assertions.assertThrows(WaterRuntimeException.class, () ->
                 documentRepositoryS3Client.upload(TEST_BUCKET, TEST_KEY, TEST_CONTENT));
+        Assertions.assertInstanceOf(S3Exception.class, ex.getCause());
     }
 
     /**
      * Test download throws exception on S3 error.
+     * executeS3Operation wraps NoSuchKeyException in WaterRuntimeException.
      */
     @Test
     @Order(9)
@@ -218,12 +223,14 @@ class DocumentRepositoryS3ClientTest {
         when(s3Client.getObjectAsBytes(any(GetObjectRequest.class)))
                 .thenThrow(NoSuchKeyException.builder().message("Key not found").build());
 
-        Assertions.assertThrows(NoSuchKeyException.class, () ->
+        WaterRuntimeException ex = Assertions.assertThrows(WaterRuntimeException.class, () ->
                 documentRepositoryS3Client.download(TEST_BUCKET, TEST_KEY));
+        Assertions.assertInstanceOf(NoSuchKeyException.class, ex.getCause());
     }
 
     /**
      * Test delete throws exception on S3 error.
+     * executeS3Operation wraps all S3 exceptions in WaterRuntimeException.
      */
     @Test
     @Order(10)
@@ -231,8 +238,9 @@ class DocumentRepositoryS3ClientTest {
         when(s3Client.deleteObject(any(DeleteObjectRequest.class)))
                 .thenThrow(S3Exception.builder().message("S3 error").build());
 
-        Assertions.assertThrows(S3Exception.class, () ->
+        WaterRuntimeException ex = Assertions.assertThrows(WaterRuntimeException.class, () ->
                 documentRepositoryS3Client.delete(TEST_BUCKET, TEST_KEY));
+        Assertions.assertInstanceOf(S3Exception.class, ex.getCause());
     }
 
     /**
@@ -284,6 +292,7 @@ class DocumentRepositoryS3ClientTest {
 
     /**
      * Test copy throws exception on S3 error.
+     * executeS3Operation wraps all S3 exceptions in WaterRuntimeException.
      */
     @Test
     @Order(13)
@@ -291,12 +300,14 @@ class DocumentRepositoryS3ClientTest {
         when(s3Client.copyObject(any(CopyObjectRequest.class)))
                 .thenThrow(S3Exception.builder().message("S3 error").build());
 
-        Assertions.assertThrows(S3Exception.class, () ->
+        WaterRuntimeException ex = Assertions.assertThrows(WaterRuntimeException.class, () ->
                 documentRepositoryS3Client.copy(TEST_BUCKET, TEST_KEY, "dest-bucket", "dest-key"));
+        Assertions.assertInstanceOf(S3Exception.class, ex.getCause());
     }
 
     /**
      * Test copy throws exception when source does not exist.
+     * executeS3Operation wraps NoSuchKeyException in WaterRuntimeException.
      */
     @Test
     @Order(14)
@@ -304,7 +315,64 @@ class DocumentRepositoryS3ClientTest {
         when(s3Client.copyObject(any(CopyObjectRequest.class)))
                 .thenThrow(NoSuchKeyException.builder().message("Source key not found").build());
 
-        Assertions.assertThrows(NoSuchKeyException.class, () ->
+        WaterRuntimeException ex = Assertions.assertThrows(WaterRuntimeException.class, () ->
                 documentRepositoryS3Client.copy(TEST_BUCKET, TEST_KEY, "dest-bucket", "dest-key"));
+        Assertions.assertInstanceOf(NoSuchKeyException.class, ex.getCause());
+    }
+
+    /**
+     * Test executeS3Operation catches NoSuchBucketException and wraps it in WaterRuntimeException.
+     */
+    @Test
+    @Order(15)
+    void uploadShouldWrapNoSuchBucketException() {
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenThrow(NoSuchBucketException.builder().message("Bucket not found").build());
+
+        WaterRuntimeException ex = Assertions.assertThrows(WaterRuntimeException.class, () ->
+                documentRepositoryS3Client.upload(TEST_BUCKET, TEST_KEY, TEST_CONTENT));
+        Assertions.assertInstanceOf(NoSuchBucketException.class, ex.getCause());
+    }
+
+    /**
+     * Test executeS3Operation catches SdkClientException (connection errors) and wraps it in WaterRuntimeException.
+     */
+    @Test
+    @Order(16)
+    void uploadShouldWrapSdkClientException() {
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenThrow(SdkClientException.create("Connection refused"));
+
+        WaterRuntimeException ex = Assertions.assertThrows(WaterRuntimeException.class, () ->
+                documentRepositoryS3Client.upload(TEST_BUCKET, TEST_KEY, TEST_CONTENT));
+        Assertions.assertInstanceOf(SdkClientException.class, ex.getCause());
+    }
+
+    /**
+     * Test executeS3Operation catches any unexpected Exception and wraps it in WaterRuntimeException.
+     */
+    @Test
+    @Order(17)
+    void uploadShouldWrapUnexpectedException() {
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenThrow(new RuntimeException("Unexpected internal error"));
+
+        WaterRuntimeException ex = Assertions.assertThrows(WaterRuntimeException.class, () ->
+                documentRepositoryS3Client.upload(TEST_BUCKET, TEST_KEY, TEST_CONTENT));
+        Assertions.assertInstanceOf(RuntimeException.class, ex.getCause());
+    }
+
+    /**
+     * Test exists() propagates S3Exception other than NoSuchKeyException unwrapped.
+     * exists() only catches NoSuchKeyException - other S3 errors are not handled.
+     */
+    @Test
+    @Order(18)
+    void existsShouldPropagateUnhandledS3Exception() {
+        when(s3Client.headObject(any(HeadObjectRequest.class)))
+                .thenThrow(S3Exception.builder().message("Access denied").build());
+
+        Assertions.assertThrows(S3Exception.class, () ->
+                documentRepositoryS3Client.exists(TEST_BUCKET, TEST_KEY));
     }
 }

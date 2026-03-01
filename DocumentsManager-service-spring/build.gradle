@@ -14,6 +14,7 @@ dependencies {
 	//Core Water Deps
 	implementation group: 'it.water.distribution', name: 'Water-distribution-spring', version: project.waterVersion
 	// JPA Repository
+	implementation 'it.water.repository.jpa:JpaRepository-api:'+project.waterVersion
 	implementation 'it.water.repository.jpa:JpaRepository-spring:'+project.waterVersion
 	//hibernate validator
 	implementation group: "org.hibernate", name: "hibernate-validator", version: project.hibernateValidatorVersion

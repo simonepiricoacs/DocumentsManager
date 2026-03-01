@@ -18,6 +18,8 @@ dependencies {
 	annotationProcessor('org.atteo.classindex:classindex:' + project.atteoClassIndexVersion)
 	//Water basic modules
 	implementation group: "it.water.core", name: "Core-api", version: project.waterVersion
+	//Core-model in order to use WaterRuntimeException
+    implementation group: "it.water.core", name: "Core-model", version: project.waterVersion
 	implementation group: "it.water.core", name:"Core-interceptors", version:project.waterVersion
 
 	testAnnotationProcessor 'org.projectlombok:lombok:'+project.lombokVersion
