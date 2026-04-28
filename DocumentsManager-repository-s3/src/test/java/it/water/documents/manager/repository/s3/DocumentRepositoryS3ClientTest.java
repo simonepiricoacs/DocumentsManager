@@ -2,7 +2,7 @@ package it.water.documents.manager.repository.s3;
 
 import it.water.core.model.exceptions.WaterRuntimeException;
 import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Option;
-import it.water.documents.manager.repository.s3.service.DocumentRepositoryS3ClientImpl;
+import it.water.documents.manager.repository.s3.service.DocumentStorageClientS3Impl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -40,11 +40,11 @@ class DocumentRepositoryS3ClientTest {
     @Mock
     private DocumentRepositoryS3Option documentRepositoryS3Option;
 
-    private DocumentRepositoryS3ClientImpl documentRepositoryS3Client;
+    private DocumentStorageClientS3Impl documentRepositoryS3Client;
 
     @BeforeEach
     void setUp() throws Exception {
-        documentRepositoryS3Client = new DocumentRepositoryS3ClientImpl();
+        documentRepositoryS3Client = new DocumentStorageClientS3Impl();
         documentRepositoryS3Client.setDocumentRepositoryOption(documentRepositoryS3Option);
         injectS3Client(documentRepositoryS3Client, s3Client);
     }
@@ -52,8 +52,8 @@ class DocumentRepositoryS3ClientTest {
     /**
      * Inject mocked S3Client using reflection.
      */
-    private void injectS3Client(DocumentRepositoryS3ClientImpl client, S3Client mockS3Client) throws Exception {
-        Field s3ClientField = DocumentRepositoryS3ClientImpl.class.getDeclaredField("s3Client");
+    private void injectS3Client(DocumentStorageClientS3Impl client, S3Client mockS3Client) throws Exception {
+        Field s3ClientField = DocumentStorageClientS3Impl.class.getDeclaredField("s3Client");
         s3ClientField.setAccessible(true);
         s3ClientField.set(client, mockS3Client);
     }

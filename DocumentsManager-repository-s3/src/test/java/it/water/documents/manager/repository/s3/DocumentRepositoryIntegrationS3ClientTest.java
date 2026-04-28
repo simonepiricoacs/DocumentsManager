@@ -1,6 +1,6 @@
 package it.water.documents.manager.repository.s3;
 
-import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Client;
+import it.water.documents.manager.repository.s3.api.DocumentStorageClient;
 import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Option;
 import it.water.documents.manager.repository.s3.service.DocumentRepositoryIntegrationS3ClientImpl;
 import org.junit.jupiter.api.*;
@@ -29,7 +29,7 @@ class DocumentRepositoryIntegrationS3ClientTest {
     private static final byte[] TEST_CONTENT = "test content".getBytes();
 
     @Mock
-    private DocumentRepositoryS3Client documentRepositoryS3Client;
+    private DocumentStorageClient documentStorageClient;
 
     @Mock
     private DocumentRepositoryS3Option documentRepositoryS3Option;
@@ -51,7 +51,7 @@ class DocumentRepositoryIntegrationS3ClientTest {
 
         integrationClient.addNewFile(path, inputStream);
 
-        verify(documentRepositoryS3Client, times(1))
+        verify(documentStorageClient, times(1))
                 .upload(eq(BUCKET_NAME), eq(path), eq(TEST_CONTENT));
     }
 
@@ -74,7 +74,7 @@ class DocumentRepositoryIntegrationS3ClientTest {
         integrationClient.updateFile(path, inputStream);
 
         // verify that the upload method was called exactly once with the correct parameters
-        verify(documentRepositoryS3Client, times(1))
+        verify(documentStorageClient, times(1))
                 .upload(eq(BUCKET_NAME), eq(path), eq(TEST_CONTENT));
     }
 
@@ -96,7 +96,7 @@ class DocumentRepositoryIntegrationS3ClientTest {
 
         integrationClient.deleteFile(path, fileName);
 
-        verify(documentRepositoryS3Client, times(1))
+        verify(documentStorageClient, times(1))
                 .delete(eq(BUCKET_NAME), eq(path + "/" + fileName));
     }
 
@@ -105,14 +105,14 @@ class DocumentRepositoryIntegrationS3ClientTest {
     void fetchDocumentContentShouldReturnInputStream() {
         String path = "documents/test";
         InputStream expectedStream = new ByteArrayInputStream(TEST_CONTENT);
-        when(documentRepositoryS3Client.downloadAsStream(BUCKET_NAME, path))
+        when(documentStorageClient.downloadAsStream(BUCKET_NAME, path))
                 .thenReturn(expectedStream);
 
         InputStream result = integrationClient.fetchDocumentContent(path);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(expectedStream, result);
-        verify(documentRepositoryS3Client, times(1))
+        verify(documentStorageClient, times(1))
                 .downloadAsStream(eq(BUCKET_NAME), eq(path));
     }
 
@@ -127,9 +127,9 @@ class DocumentRepositoryIntegrationS3ClientTest {
 
         integrationClient.moveFile(oldPath, newPath, fileName);
 
-        verify(documentRepositoryS3Client, times(1))
+        verify(documentStorageClient, times(1))
                 .copy(eq(BUCKET_NAME), eq(sourceKey), eq(BUCKET_NAME), eq(destKey));
-        verify(documentRepositoryS3Client, times(1))
+        verify(documentStorageClient, times(1))
                 .delete(eq(BUCKET_NAME), eq(sourceKey));
     }
 
@@ -142,7 +142,7 @@ class DocumentRepositoryIntegrationS3ClientTest {
 
         integrationClient.moveFile(oldPath, newPath, fileName);
 
-        verify(documentRepositoryS3Client).copy(
+        verify(documentStorageClient).copy(
                 eq(BUCKET_NAME),
                 eq("path/a/b/document.pdf"),
                 eq(BUCKET_NAME),
@@ -161,9 +161,9 @@ class DocumentRepositoryIntegrationS3ClientTest {
 
         integrationClient.renameFile(path, oldFileName, newFileName);
 
-        verify(documentRepositoryS3Client, times(1))
+        verify(documentStorageClient, times(1))
                 .copy(eq(BUCKET_NAME), eq(sourceKey), eq(BUCKET_NAME), eq(destKey));
-        verify(documentRepositoryS3Client, times(1))
+        verify(documentStorageClient, times(1))
                 .delete(eq(BUCKET_NAME), eq(sourceKey));
     }
 
@@ -176,13 +176,13 @@ class DocumentRepositoryIntegrationS3ClientTest {
 
         integrationClient.renameFile(path, oldName, newName);
 
-        verify(documentRepositoryS3Client).copy(
+        verify(documentStorageClient).copy(
                 eq(BUCKET_NAME),
                 eq("documents/invoices/2024/invoice_001.pdf"),
                 eq(BUCKET_NAME),
                 eq("documents/invoices/2024/invoice_001_final.pdf")
         );
-        verify(documentRepositoryS3Client).delete(
+        verify(documentStorageClient).delete(
                 eq(BUCKET_NAME),
                 eq("documents/invoices/2024/invoice_001.pdf")
         );

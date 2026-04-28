@@ -40,7 +40,9 @@ public interface DocumentsManagerSpringRestApi extends DocumentsManagerRestApi {
     @LoggedIn
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @JsonView(WaterJsonView.Public.class)
-    Document save(@RequestPart(Document.DOCUMENT_ENTITY_HTTP_PART_NAME) Document document, @RequestPart(value = Document.DOCUMENT_CONTENT_HTTP_PART_NAME) MultipartFile file);
+    Document save(
+            @RequestPart(Document.DOCUMENT_ENTITY_HTTP_PART_NAME)
+            Document document, @RequestPart(value = Document.DOCUMENT_CONTENT_HTTP_PART_NAME) MultipartFile file);
 
     @LoggedIn
     @PutMapping(consumes = "multipart/form-data")

@@ -3,7 +3,7 @@ package it.water.documents.manager.repository.s3.service;
 import it.water.core.interceptors.annotations.FrameworkComponent;
 import it.water.core.interceptors.annotations.Inject;
 import it.water.documents.manager.api.integration.DocumentRepositoryIntegrationClient;
-import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Client;
+import it.water.documents.manager.repository.s3.api.DocumentStorageClient;
 import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Option;
 
 import it.water.core.model.exceptions.WaterRuntimeException;
@@ -19,7 +19,7 @@ public class DocumentRepositoryIntegrationS3ClientImpl implements DocumentReposi
 
     @Setter
     @Inject
-    private DocumentRepositoryS3Client documentRepositoryS3Client;
+    private DocumentStorageClient documentStorageClient;
 
     @Setter
     @Inject
@@ -34,7 +34,7 @@ public class DocumentRepositoryIntegrationS3ClientImpl implements DocumentReposi
         try {
 
             byte[] content = sourceFile.readAllBytes();
-            documentRepositoryS3Client.upload(getBucket(), path, content);
+            documentStorageClient.upload(getBucket(), path, content);
         } catch (IOException e) {
             throw new WaterRuntimeException("Failed to upload file: " + path, e);
         }
@@ -45,7 +45,7 @@ public class DocumentRepositoryIntegrationS3ClientImpl implements DocumentReposi
     public void updateFile(String path, InputStream sourceFile) {
         try {
             byte[] content = sourceFile.readAllBytes();
-            documentRepositoryS3Client.upload(getBucket(), path, content);
+            documentStorageClient.upload(getBucket(), path, content);
         } catch (IOException e) {
             throw new WaterRuntimeException("Failed to update file: " + path, e);
         }
@@ -55,28 +55,28 @@ public class DocumentRepositoryIntegrationS3ClientImpl implements DocumentReposi
     public void moveFile(String oldPath, String newPath, String fileName) {
         String sourceKey = oldPath + "/" + fileName;
         String destKey = newPath + "/" + fileName;
-        documentRepositoryS3Client.copy(getBucket(), sourceKey, getBucket(), destKey);
-        documentRepositoryS3Client.delete(getBucket(), sourceKey);
+        documentStorageClient.copy(getBucket(), sourceKey, getBucket(), destKey);
+        documentStorageClient.delete(getBucket(), sourceKey);
     }
 
     @Override
     public void renameFile(String path, String oldFileName, String newFileName) {
         String sourceKey = path + "/" + oldFileName;
         String destKey = path + "/" + newFileName;
-        documentRepositoryS3Client.copy(getBucket(), sourceKey, getBucket(), destKey);
-        documentRepositoryS3Client.delete(getBucket(), sourceKey);
+        documentStorageClient.copy(getBucket(), sourceKey, getBucket(), destKey);
+        documentStorageClient.delete(getBucket(), sourceKey);
     }
 
     @Override
     public void deleteFile(String path, String fileName) {
         String key = path + "/" + fileName;
-        documentRepositoryS3Client.delete(getBucket(), key);
+        documentStorageClient.delete(getBucket(), key);
     }
 
 
     @Override
     public InputStream fetchDocumentContent(String path) {
-        return documentRepositoryS3Client.downloadAsStream(getBucket(), path);
+        return documentStorageClient.downloadAsStream(getBucket(), path);
     }
 
 

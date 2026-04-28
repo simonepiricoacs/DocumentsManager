@@ -84,9 +84,13 @@ public class DocumentControllerImpl extends BaseEntityRestApi<Document> implemen
         return folderApi.find(id);
     }
 
+    /**
+     * Returns all folders without pagination (delta=-1, page=-1 = no limit).
+     * TODO: impl pagination/filtering
+     */
     @Override
     public PaginableResult<Folder> findAllFolders() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return folderApi.findAll(null, -1, -1, null);
     }
 
     @Override

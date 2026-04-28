@@ -4,7 +4,7 @@ import it.water.core.interceptors.annotations.FrameworkComponent;
 import it.water.core.interceptors.annotations.Inject;
 import it.water.core.model.exceptions.WaterRuntimeException;
 import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Option;
-import it.water.documents.manager.repository.s3.api.DocumentRepositoryS3Client;
+import it.water.documents.manager.repository.s3.api.DocumentStorageClient;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -22,9 +22,9 @@ import java.util.function.Supplier;
 
 import static it.water.documents.manager.repository.s3.config.DocumentRepositoryS3Constant.*;
 
-@FrameworkComponent(services =  {DocumentRepositoryS3Client.class})
+@FrameworkComponent(services =  {DocumentStorageClient.class})
 @Slf4j
-public class DocumentRepositoryS3ClientImpl implements DocumentRepositoryS3Client {
+public class DocumentStorageClientS3Impl implements DocumentStorageClient {
 
 
     private S3Client s3Client;

@@ -9,6 +9,7 @@ import it.water.documents.manager.model.Document;
 import it.water.documents.manager.model.Folder;
 import it.water.documents.manager.service.rest.DocumentControllerImpl;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import java.io.OutputStream;
  * Rest Api Class for DocumentsManager entity. It just overrides method invoking super in order to let spring find web methods.
  */
 @RestController
+@Slf4j
 public class DocumentsManagerSpringRestControllerImpl extends DocumentControllerImpl implements DocumentsManagerSpringRestApi {
     private static Logger logger = LoggerFactory.getLogger(DocumentsManagerSpringRestControllerImpl.class);
     @Autowired
