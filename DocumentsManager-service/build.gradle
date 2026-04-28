@@ -100,6 +100,9 @@ waterDescriptor {
     moduleId    = 'it.water.documents'
     displayName = 'Documents Manager'
     description = 'Document and folder management with metadata persistence and pluggable content storage backends'
+    componentsPackage = 'it.water.documents.manager.service'
+    repositoryPackage = 'it.water.documents.manager.service.repository'
+    entitiesPackage   = 'it.water.documents.manager.model'
 
     output {
         standardPin 'jdbc'

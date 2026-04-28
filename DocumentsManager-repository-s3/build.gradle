@@ -48,6 +48,7 @@ waterDescriptor {
     moduleId    = 'it.water.documents.repository.s3'
     displayName = 'Documents Repository S3'
     description = 'AWS S3 (and S3-compatible) content storage backend for Documents Manager'
+    componentsPackage = 'it.water.documents.manager.repository.s3.service'
 
     properties {
         property('it.water.storage.endpoint') {
